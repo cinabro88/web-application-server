@@ -2,6 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.HttpHeaderUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,19 +23,18 @@ public class RequestHandler extends Thread {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String path = reader.readLine().split(" ")[1];
-            DataOutputStream dos = new DataOutputStream(out);
-
-            if ("/index.html".equals(path)) {
-                byte[] body = Files.readAllBytes(new File("./webapp" + path).toPath());
-                response200Header(dos, body.length);
-                responseBody(dos, body);
+            String firstHeaderLine = reader.readLine();
+            if (firstHeaderLine == null) {
                 return;
             }
 
-            byte[] body = "Hello World".getBytes();
+            String url = HttpHeaderUtils.getUrl(firstHeaderLine);
+            DataOutputStream dos = new DataOutputStream(out);
+
+            byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
             response200Header(dos, body.length);
             responseBody(dos, body);
+
         } catch (IOException e) {
             log.error(e.getMessage());
         }
