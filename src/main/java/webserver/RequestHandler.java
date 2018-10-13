@@ -1,5 +1,6 @@
 package webserver;
 
+import core.RequestParam;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class RequestHandler extends Thread {
             String path = HttpHeaderUtils.getPath(url);
 
             if ("/user/create".equals(path)) {
-                Map<String, String> params = HttpHeaderUtils.getQueryParams(url);
+                RequestParam params = HttpHeaderUtils.getRequestParam(url);
                 User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
                 log.debug("User={}", user);
 

@@ -1,8 +1,7 @@
 package util;
 
+import core.RequestParam;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,7 +37,7 @@ public class HttpHeaderUtilsTest {
         String url = "/user/form?id=id&password=password&name=name&empty=";
 
         // when
-        Map<String, String> params = HttpHeaderUtils.getQueryParams(url);
+        RequestParam params = HttpHeaderUtils.getRequestParam(url);
 
         // then
         assertEquals("id", params.get("id"));
