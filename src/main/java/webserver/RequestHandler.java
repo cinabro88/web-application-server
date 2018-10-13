@@ -1,5 +1,6 @@
 package webserver;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpHeaderUtils;
@@ -7,6 +8,7 @@ import util.HttpHeaderUtils;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Map;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -29,9 +31,19 @@ public class RequestHandler extends Thread {
             }
 
             String url = HttpHeaderUtils.getUrl(firstHeaderLine);
+            String path = HttpHeaderUtils.getPath(url);
+
+            if ("/user/create".equals(path)) {
+                Map<String, String> params = HttpHeaderUtils.getQueryParams(url);
+                User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
+                log.debug("User={}", user);
+
+                path = "/index.html";
+            }
+
             DataOutputStream dos = new DataOutputStream(out);
 
-            byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+            byte[] body = Files.readAllBytes(new File("./webapp" + path).toPath());
             response200Header(dos, body.length);
             responseBody(dos, body);
 
